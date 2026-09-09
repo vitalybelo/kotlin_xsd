@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<configuration xmlns="urn:activemq"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="urn:activemq /schema/artemis-configuration.xsd">
+
+    <core xmlns="urn:activemq:core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="urn:activemq:core">
+
+        <name>my-broker</name>
+        <persistence-enabled>true</persistence-enabled>
+
+        <!-- Точка подключения для Spring Boot (порт 61616) -->
+        <acceptors>
+            <acceptor name="artemis">tcp://0.0.0.0:61616?protocols=CORE,AMQP,OPENWIRE</acceptor>
+        </acceptors>
+
+        <addresses>
+            <!-- Объявление адресов и очередей -->
+            <address name="queue.in">
+                <anycast>
+                    <queue name="queue.in"/>
+                </anycast>
+            </address>
+
+            <address name="queue.out">
+                <anycast>
+                    <queue name="queue.out"/>
+                </anycast>
+            </address>
+
+            <!-- НОВЫЕ ОЧЕРЕДИ ДЛЯ CRM -->
+            <address name="queue.crm.in">
+                <anycast>
+                    <queue name="queue.crm.in" />
+                </anycast>
+            </address>
+            <address name="queue.crm.out">
+                <anycast>
+                    <queue name="queue.crm.out" />
+                </anycast>
+            </address>
+
+            <!-- НОВЫЕ ОЧЕРЕДИ ДЛЯ BILLING -->
+            <address name="queue.billing.in">
+                <anycast>
+                    <queue name="queue.billing.in" />
+                </anycast>
+            </address>
+            <address name="queue.billing.out">
+                <anycast>
+                    <queue name="queue.billing.out" />
+                </anycast>
+            </address>
+
+            <!-- ОЧЕРЕДИ ДЛЯ DLQ -->
+            <address name="queue.dlq.in">
+                <anycast>
+                    <queue name="queue.dlq.in" />
+                </anycast>
+            </address>
+            <address name="queue.dlq.out">
+                <anycast>
+                    <queue name="queue.dlq.out" />
+                </anycast>
+            </address>
+        </addresses>
+
+        <!-- Правила перенаправления сообщений -->
+        <diverts>
+            <divert name="my-divert">
+                <address>queue.in</address>
+                <forwarding-address>queue.out</forwarding-address>
+                <exclusive>true</exclusive>
+            </divert>
+            <divert name="crm-divert">
+                <address>queue.crm.in</address>
+                <forwarding-address>queue.crm.out</forwarding-address>
+                <exclusive>true</exclusive>
+            </divert>
+            <divert name="billing-divert">
+                <address>queue.billing.in</address>
+                <forwarding-address>queue.billing.out</forwarding-address>
+                <exclusive>true</exclusive>
+            </divert>
+            <!-- ДИВЕРТ ДЛЯ DLQ -->
+            <divert name="dlq-divert">
+                <address>queue.dlq.in</address>
+                <forwarding-address>queue.dlq.out</forwarding-address>
+                <exclusive>true</exclusive>
+            </divert>
+        </diverts>
+
+        <!-- Базовые настройки безопасности -->
+        <security-settings>
+            <security-setting match="#">
+                <permission type="createNonDurableQueue" roles="amq"/>
+                <permission type="deleteNonDurableQueue" roles="amq"/>
+                <permission type="createDurableQueue" roles="amq"/>
+                <permission type="deleteDurableQueue" roles="amq"/>
+                <permission type="createAddress" roles="amq"/>
+                <permission type="deleteAddress" roles="amq"/>
+                <permission type="consume" roles="amq"/>
+                <permission type="browse" roles="amq"/>
+                <permission type="send" roles="amq"/>
+                <permission type="manage" roles="amq"/>
+            </security-setting>
+        </security-settings>
+
+        <!-- Настройки доставки и хранения -->
+        <address-settings>
+            <address-setting match="#">
+                <!-- Заменили дефолтный DLQ на наш queue.dlq.in -->
+                <dead-letter-address>queue.dlq.in</dead-letter-address>
+                <expiry-address>ExpiryQueue</expiry-address>
+                <redelivery-delay>0</redelivery-delay>
+                <max-size-bytes>-1</max-size-bytes>
+                <message-counter-history-day-limit>10</message-counter-history-day-limit>
+                <address-full-policy>PAGE</address-full-policy>
+                <auto-create-queues>true</auto-create-queues>
+                <auto-create-addresses>true</auto-create-addresses>
+            </address-setting>
+        </address-settings>
+
+    </core>
+</configuration>

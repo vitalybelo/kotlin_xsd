@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="UserEvent">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="eventType">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:enumeration value="CREATED"/>
+                            <xs:enumeration value="UPDATED"/>
+                            <xs:enumeration value="DELETED"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+
+                <xs:element name="userId" type="xs:string"/>
+                <xs:element name="username" type="xs:string"/>
+                <xs:element name="email" type="xs:string" minOccurs="0"/>
+                <xs:element name="firstName" type="xs:string" minOccurs="0"/>
+                <xs:element name="lastName" type="xs:string" minOccurs="0"/>
+                <xs:element name="phone" type="xs:string" minOccurs="0"/>
+
+                <xs:element name="twoFactorMethod">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:enumeration value="SMS"/>
+                            <xs:enumeration value="APP"/>
+                            <xs:enumeration value="TELEGRAM"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+
+                <xs:element name="enable" type="xs:boolean"/>
+
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

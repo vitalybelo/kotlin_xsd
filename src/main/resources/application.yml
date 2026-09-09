@@ -1,5 +1,35 @@
-
+server:
+  port: 8080
+  servlet:
+    context-path: /api/xsd
 
 spring:
   application:
     name: kotlin_xsd
+
+  artemis:
+    mode: native
+    broker-url: tcp://localhost:61616
+    user: admin
+    password: admin
+
+queues:
+  xml:
+    in: queue.out
+    out: queue.in
+  xsd:
+    crm:
+      in: queue.crm.out
+      out: queue.crm.in
+    billing:
+      in: queue.billing.out
+      out: queue.billing.in
+    dlq:
+      in: queue.dlq.out
+      out: queue.dlq.in
+
+keycloak:
+  url: http://localhost:8443
+  realm: SpringBootKeycloak
+  client_id: login-admin
+  client_secret: 6dMULRFc4gnadbs4xaqzvUueaQNJJSBS

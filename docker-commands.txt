@@ -1,0 +1,2 @@
+# прокинуть очереди и diverts в образ
+docker cp broker.xml local-artemis-xsd:/var/lib/artemis-instance/etc/broker.xml

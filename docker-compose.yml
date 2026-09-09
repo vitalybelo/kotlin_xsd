@@ -1,19 +1,19 @@
 services:
   artemis:
     image: apache/activemq-artemis:latest
-    container_name: local-artemis
+    container_name: local-artemis-xsd
     environment:
       - ARTEMIS_USER=admin
       - ARTEMIS_PASSWORD=admin
     ports:
-      - "8161:8161"   # Веб-консоль управления
-      - "61616:61616" # Основной порт (JMS, AMQP, OpenWire, STOMP, MQTT)
-    volumes:
-      - artemis-data:/var/lib/artemis/data
+      - "8162:8161"
+      - "61616:61616"
+#    volumes:
+#      - ./broker.xml:/var/lib/artemis-instance/etc/broker.xml
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.4.1
-    container_name: local-keycloak
+    container_name: local-keycloak-xsd
     command: start-dev --log-level="info,keycloak.spi.event_listener:debug,keycloak.spi.brute_force_locker:debug,keycloak.spi.token_mapper:debug,keycloak.spi.telegram:debug,keycloak.spi.username_limiter:debug,keycloak.spi.conditional_attribute:debug,keycloak.spi.trusted_device:debug,keycloak.spi.migration:debug,keycloak.spi.custom_session:debug,keycloak.spi.age_restriction:debug,keycloak.spi.fincert_blocks:debug"
     environment:
       - KEYCLOAK_ADMIN=admin
@@ -24,10 +24,5 @@ services:
       - KC_DB_PASSWORD=Vitalex88
     ports:
       - "8443:8080" # Внешний порт 8443 смотрит на внутренний 8080 порт Keycloak
-    depends_on:
-      - artemis
     volumes:
-      - /c/Keycloak/providers:/opt/keycloak/providers
-
-volumes:
-  artemis-data:
+      - /c/Keycloak/providers:/opt/keycloak/providers # прокидываем порт где локально лежат spi провайдеры
